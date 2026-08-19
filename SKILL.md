@@ -1,18 +1,15 @@
 ---
 name: agentsmd-architect
 description: >-
-  Use this skill whenever a Pi coding agent may need to create, update, audit,
-  split, prune, relocate, or refuse changes to AGENTS.md files. Trigger it not
-  only when the user mentions AGENTS.md, but also when repo structure, package
-  commands, validation workflows, generated files, architecture boundaries,
-  subproject conventions, or recurring agent mistakes suggest future Pi
-  sessions may need durable guidance. This skill is conservative and
-  anti-entropy: it decides where guidance lives (root AGENTS.md, nested
-  AGENTS.md, doc, skill, executable check, or nowhere) and when it applies
-  (foundational bare guidance vs condition-scoped important-if blocks), and it
-  requires evidence, correct scope, conflict checks, and pruning instead of
-  blindly appending rules.
-disable-model-invocation: true
+  Create, update, audit, split, or prune AGENTS.md instruction files for Pi
+  coding agents. Use when the user mentions AGENTS.md or CLAUDE.md, asks to
+  make future agents remember something, reports repeated agent mistakes, or
+  when repo structure, package commands, generated files, or architecture
+  boundaries suggest future sessions need durable guidance. Decides where
+  guidance lives (root or nested AGENTS.md, doc, skill, executable check,
+  nowhere) and when it applies (foundational bare rules vs condition-scoped
+  blocks); requires evidence, correct scope, conflict checks, and pruning
+  over appending.
 ---
 
 # agentsmd-architect
@@ -26,7 +23,7 @@ Every instruction has two axes:
 
 The job is not to "write more instructions." The job is to keep future Pi sessions reliably oriented without turning the repository into a growing pile of stale, contradictory, always-on context.
 
-Pi loads `AGENTS.md` and `CLAUDE.md` identically as context files (same format, same loader). Apply the same discipline to whichever name a repo uses.
+Per directory, Pi treats `CLAUDE.md` as a fallback when no `AGENTS.md` exists (see "Pi runtime facts"). Apply the same discipline to whichever name a repo uses.
 
 Assume many users do not know when instruction files should change. The agent must notice durable lessons while working, but stay disciplined enough not to memorialize every temporary fact.
 
@@ -83,9 +80,9 @@ Do not trigger for every edit. Trigger when there is a plausible durable instruc
 
 Default to **no AGENTS.md edit** unless the proposed instruction passes the Write Gate.
 
-Every added line is future context tax: Pi loads context files once at startup and keeps them in the system prompt for the whole session. Prefer replacing, moving, or deleting stale guidance over appending more.
+Every added line is token cost on every request and maintenance surface forever. (Whether length also degrades instruction adherence is unproven — the best controlled study, on Claude Code, found no adherence difference between 25- and 500-line files — so prune for token and maintenance reasons, not fear of "diluted attention".) Prefer replacing, moving, or deleting stale guidance over appending more.
 
-One exception: **commands are foundational reference.** An agent cannot guess a command it has never seen. Never delete a command for brevity — correct it, deduplicate it, or wrap it in a condition, but keep it.
+One exception: **commands are foundational reference.** An agent cannot guess a command it has never seen. Never delete a command for brevity — correct it, deduplicate it, or scope it, but keep it.
 
 ## The Write Gate
 
@@ -123,7 +120,7 @@ Classify every candidate before writing.
 
 ## Conditional relevance
 
-Pi concatenates every context file into the always-on system prompt, so uniformly-weighted instructions compete for attention. Weight each rule by when it applies.
+Weight each rule by when it applies, so an agent reading the file sees at a glance which rules matter for the current task. The `<important if>` form is a convention imported from Claude Code; trigger-prefixed bullets are the portable, always-safe form.
 
 **Foundational stays bare.** Content relevant to virtually every task — project identity, project map, tech stack, commands — is plain markdown near the top of the file. Rule of thumb: relevant to 90%+ of tasks, leave it bare.
 
@@ -152,13 +149,15 @@ Good:
 <important if="you are touching the database schema or Prisma models">
 ```
 
-**Keep everything inline.** Do not shard conditioned guidance into files the agent must discover; the point is visible-but-weighted content. (Placement into nested `AGENTS.md` is different — that is scoping by directory, not hiding content.)
+**Prefer inline over discoverable.** Conditioned guidance stays inline in a loaded file; do not move it to a separate doc the agent must find. Nested `AGENTS.md` placement is a different axis — but the loader never reaches below the session's start directory, so a nested file trades scope isolation for discovery risk (see "Root vs nested placement").
 
 **Cut embedded code, keep instruction examples.** Code snippets go stale and bloat the file — point at a file instead: "see `src/server/db.ts` for the access pattern." Short do/do-not instruction pairs that prevent a known mistake stay.
 
 ## Root vs nested placement
 
 Use the narrowest scope that remains useful.
+
+Pi's loader walks upward from the session's start directory, so a nested `AGENTS.md` loads only when the session starts inside that subtree — and sessions usually start at the repo root. Choose nested placement when the subtree is a workspace sessions enter directly, or its rules are cold enough that a root pointer suffices. When sessions launch at root and the rules are hot, keep them in root under a condition instead.
 
 ### Root `AGENTS.md`
 
@@ -169,7 +168,7 @@ Put guidance in the repo root only when it applies to most future work in the re
 - project layout map
 - global generated-file, secret, and security rules
 - global architecture constraints
-- pointers to nested `AGENTS.md` files (Pi never auto-loads them; see "Pi runtime facts")
+- pointers to nested `AGENTS.md` files (loaded only when a session starts inside that subtree; see "Pi runtime facts")
 
 Root examples:
 
@@ -231,12 +230,11 @@ Order any `AGENTS.md` with multiple concerns in layers: foundational bare conten
 
 [directory listing with brief descriptions; point at nested AGENTS.md files]
 
-<important if="you need to run commands to build, test, lint, or generate code">
+## Commands
 
 | Command | What it does |
 | --- | --- |
 | `...` | ... |
-</important>
 
 <important if="<narrow trigger for one kind of work>">
 
@@ -252,7 +250,7 @@ When an `AGENTS.md` already exists, avoid append-only edits.
 
 1. **Delete** false, stale, duplicated, generic, tool-enforceable, or imitable guidance.
 2. **Replace** weak prose with exact commands or constraints.
-3. **Move** local rules from root to nested files.
+3. **Move** local rules from root to nested files, minding the loader caveat above.
 4. **Merge** overlapping bullets into one sharper instruction.
 5. **Add** new guidance only after pruning/replacement — bare if foundational, with a condition otherwise.
 
@@ -322,12 +320,18 @@ Good:
 
 ## Worked example
 
-Input — a messy flat root `AGENTS.md`:
+Input — a messy flat root `AGENTS.md`. Everything the output claims is evidenced here or in `package.json`, which defines exactly four scripts: `dev`, `test`, `typecheck`, `check` (run as `bun run <script>`):
 
 ```md
 # AGENTS.md
 
 This is our full-stack app. We love clean code!
+
+## Project structure
+
+- apps/web — Next.js app (App Router)
+- apps/api — Express REST API
+- packages/db — Prisma schema, client, migrations
 
 ## Rules
 
@@ -336,7 +340,7 @@ This is our full-stack app. We love clean code!
 - Components use functional components with TypeScript interfaces for props.
 - Use Tailwind v4 utilities; avoid adding CSS modules.
 - Prefer server components unless the component needs browser state or effects.
-- For UI changes, run `bun test apps/web` and `bun run typecheck`.
+- For UI changes, run `bun run test apps/web` and `bun run typecheck`.
 - Schema changes require a migration in `packages/db/migrations`.
 - Never edit a committed migration; add a new one.
 - Use `src/server/db.ts` for database access; do not create new Prisma clients in route handlers.
@@ -344,7 +348,7 @@ This is our full-stack app. We love clean code!
 - Run `bun run check` before handoff.
 ```
 
-Output — root rewritten in layers, local rules moved to a nested file:
+Output — root rewritten in layers; schema rules moved to a nested file:
 
 ```md
 # AGENTS.md
@@ -353,33 +357,34 @@ Bun monorepo: Next.js web app, Express API, Prisma packages.
 
 ## Project map
 
-- `apps/web/` — Next.js app; see `apps/web/AGENTS.md` before editing there.
+- `apps/web/` — Next.js app (App Router).
 - `apps/api/` — Express REST API.
-- `packages/db/` — Prisma schema, client, migrations.
+- `packages/db/` — Prisma schema, client, migrations; see `packages/db/AGENTS.md` before schema work.
 
-<important if="you need to run commands to build, test, lint, or generate code">
+## Commands
 
 | Command | What it does |
 | --- | --- |
-| `bun install` | Install dependencies |
-| `bun run dev` | Start dev servers |
-| `bun test` | Run all tests |
+| `bun run dev` | Start dev server |
+| `bun run test` | Run all tests |
+| `bun run typecheck` | Typecheck |
 | `bun run check` | Full check; run before handoff |
-</important>
 
-<important if="you are touching the database schema or Prisma models">
-
-- Schema changes require a new migration in `packages/db/migrations`; never edit a committed one.
-- Use `src/server/db.ts` for database access; do not create new Prisma clients in route handlers.
-</important>
-```
-
-```md
-# apps/web/AGENTS.md
+<important if="you are building or styling UI in apps/web">
 
 - Prefer server components unless the component needs browser state or effects.
 - Use Tailwind v4 utilities; avoid adding CSS modules. See `src/app/` for the pattern.
-- For UI changes, run `bun test apps/web` plus `bun run typecheck`.
+- For UI changes: `bun run test apps/web` plus `bun run typecheck`.
+</important>
+
+- When accessing the database from route handlers: use `src/server/db.ts`; do not create new Prisma clients.
+```
+
+```md
+# packages/db/AGENTS.md
+
+- Schema changes require a migration in `packages/db/migrations`.
+- Never edit a committed migration; add a new one.
 ```
 
 What was removed and why:
@@ -391,12 +396,13 @@ What was removed and why:
 
 What was moved:
 
-- Tailwind, server-component, and UI-test rules → `apps/web/AGENTS.md` (true only there)
+- migration rules → `packages/db/AGENTS.md` (per the placement algorithm: the lowest directory whose descendants all need them), with a map pointer; sessions doing schema work often start inside the package
+- web rules stayed in root, conditioned — sessions launch at root and UI work is hot, so a nested `apps/web/AGENTS.md` might never load
 
 What was kept:
 
-- every command (commands survive pruning)
-- migration and Prisma-client traps — repo-specific and durable, now one conditioned block
+- all four commands from `package.json`, now bare in the Commands section (commands survive pruning)
+- the Prisma-client rule — a single root-relevant rule, so a trigger-prefixed bullet
 - project map — foundational, stays bare
 
 ## Handling noncoder / vibe-coded projects
@@ -432,6 +438,8 @@ Instruction precedence for AGENTS.md hierarchy:
 4. General Pi/default behavior
 
 If instructions conflict, do not patch around it with caveats. Resolve by editing the narrower or stale instruction, or report the conflict if resolution is not obvious.
+
+This list is session authority — which instruction wins when several are loaded. It does not override edit-target selection: fixes still go wherever the placement algorithm points.
 
 Prefer:
 
@@ -512,8 +520,10 @@ I did not update AGENTS.md because the discovered fact is task-specific and not 
 
 These verified facts drive every rule above:
 
-- Pi loads context files once at startup, from `~/.pi/agent/AGENTS.md` (global), parent directories walking up from cwd, and cwd. All files are concatenated into the system prompt inside `<project_instructions path="...">` tags. Nothing is loaded mid-session.
-- Nested `AGENTS.md` files below cwd are never auto-loaded. Root must point at them explicitly.
-- Pi adds no "may or may not be relevant" caveat to injected context, but everything loaded is always-on system-prompt content — volume still dilutes attention. Conditional relevance is the counterweight.
+- Pi loads context files at startup, from `~/.pi/agent/AGENTS.md` (global), the session's start directory, and parent directories walking up from it. All matching files are concatenated into the system prompt inside `<project_instructions path="...">` tags.
+- Context files are re-read when the user runs `/reload`. Nothing loads automatically on file access or directory change mid-session.
+- The loader walks upward only: a nested `AGENTS.md` below the start directory is never auto-loaded. It matters only when a session starts inside that subtree, or a root pointer tells the agent to read it.
+- Pi adds no "may or may not be relevant" caveat to injected context. `<important if>` conditioning is a convention imported from Claude Code, not a measured Pi behavior.
 - Per directory, Pi loads the first match of: `AGENTS.override.md`, `AGENTS.md`, `AGENTS.MD`, `CLAUDE.md`, `CLAUDE.MD`. Other directories still layer normally.
+- In a linked git worktree, the worktree's context file shadows the main checkout's file for that directory.
 - Context file discovery can be disabled with `--no-context-files` (`-nc`).
