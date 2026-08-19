@@ -1,15 +1,12 @@
 ---
 name: agentsmd-architect
 description: >-
-  Create, update, audit, split, or prune AGENTS.md instruction files for Pi
-  coding agents. Use when the user mentions AGENTS.md or CLAUDE.md, asks to
-  make future agents remember something, reports repeated agent mistakes, or
-  when repo structure, package commands, generated files, or architecture
-  boundaries suggest future sessions need durable guidance. Decides where
-  guidance lives (root or nested AGENTS.md, doc, skill, executable check,
-  nowhere) and when it applies (foundational bare rules vs condition-scoped
-  blocks); requires evidence, correct scope, conflict checks, and pruning
-  over appending.
+  Write and maintain AGENTS.md files for Pi coding agents: create, update,
+  audit, split, or prune them. Use when the user mentions AGENTS.md or
+  CLAUDE.md, asks to make future agents remember something, reports repeated
+  agent mistakes, or when repo structure, package commands, generated files,
+  or architecture boundaries suggest that future sessions need durable
+  guidance.
 ---
 
 # agentsmd-architect
@@ -19,13 +16,13 @@ Design and maintain `AGENTS.md` instruction hierarchies for Pi coding agents.
 Every instruction has two axes:
 
 - **Placement** — where it lives: root `AGENTS.md`, nested `AGENTS.md`, doc, skill, executable check, or nowhere.
-- **Condition** — when it applies: foundational rules are relevant to nearly every task and stay bare; conditional rules apply to one kind of work and carry a trigger.
+- **Condition** — when it applies: foundational rules are relevant to nearly every task and stay bare. Conditional rules apply to one kind of work and carry a trigger.
 
-The job is not to "write more instructions." The job is to keep future Pi sessions reliably oriented without turning the repository into a growing pile of stale, contradictory, always-on context.
+Keep future Pi sessions oriented. Keep the repository free of stale, contradictory, always-on context.
 
 Per directory, Pi treats `CLAUDE.md` as a fallback when no `AGENTS.md` exists (see "Pi runtime facts"). Apply the same discipline to whichever name a repo uses.
 
-Assume many users do not know when instruction files should change. The agent must notice durable lessons while working, but stay disciplined enough not to memorialize every temporary fact.
+Many users do not know when instruction files must change. Notice durable lessons while you work. Record only what stays true.
 
 ## Core stance
 
@@ -52,37 +49,17 @@ Bad `AGENTS.md` files accumulate:
 
 Use the smallest durable instruction that prevents future mistakes.
 
-## When to trigger this skill
-
-Use this skill when the user asks to:
-
-- create, improve, audit, clean up, split, or consolidate `AGENTS.md`
-- "make future agents know this"
-- "add this to memory/instructions"
-- fix repeated Pi agent mistakes
-- make a repo easier for AI agents to work in
-- set up a new project, app, package, service, or monorepo area
-
-Also trigger proactively when you discover evidence that future sessions may need durable guidance:
-
-- the package manager, test command, build command, or dev command is non-obvious
-- a subtree has different conventions than the repo root
-- generated files, vendored files, migrations, secrets, or snapshots have special handling rules
-- agents repeatedly choose the wrong directory, command, framework pattern, or import boundary
-- an `AGENTS.md` instruction is stale, false, duplicated, or contradicted by code
-- a new nested app/package/module creates a new instruction scope
-- a root `AGENTS.md` is becoming a ball of mud
-- the user is vibe-building and probably will not know to request instruction maintenance explicitly
-
-Do not trigger for every edit. Trigger when there is a plausible durable instruction-design decision.
-
 ## Anti-entropy law
 
 Default to **no AGENTS.md edit** unless the proposed instruction passes the Write Gate.
 
-Every added line is token cost on every request and maintenance surface forever. (Whether length also degrades instruction adherence is unproven — the best controlled study, on Claude Code, found no adherence difference between 25- and 500-line files — so prune for token and maintenance reasons, not fear of "diluted attention".) Prefer replacing, moving, or deleting stale guidance over appending more.
+Every added line costs tokens on every request. Every added line is also maintenance surface, forever.
 
-One exception: **commands are foundational reference.** An agent cannot guess a command it has never seen. Never delete a command for brevity — correct it, deduplicate it, or scope it, but keep it.
+The one controlled study, on Claude Code, found no adherence difference between 25-line and 500-line instruction files. Prune for token cost and maintenance.
+
+Prefer to replace, move, or delete stale guidance before you append.
+
+One exception: **commands.** An agent cannot guess a command it has never seen. Keep every command. Correct it, deduplicate it, or scope it — never delete it for brevity.
 
 ## The Write Gate
 
@@ -97,7 +74,7 @@ Before creating or modifying any `AGENTS.md`, evaluate each candidate instructio
 7. **Conflict-free** — does not contradict root, parent, or nested instructions?
 8. **Right home** — if a linter, formatter, test, CI rule, or Pi extension hook can enforce it, cut the instruction and enforce instead. Otherwise, is `AGENTS.md` better than a doc or skill?
 9. **Evidence-backed** — inferred from files/commands/errors, not vibes?
-10. **Not-imitable** — if the agent can learn it by imitating consistent patterns in existing code, do not write it. LLMs are in-context imitators; consistently applied conventions do not need documenting.
+10. **Not-imitable** — if the agent can learn it by imitating consistent patterns in existing code, do not write it. LLMs are in-context imitators. Consistently applied conventions do not need documenting.
 
 If any answer fails, either skip the edit or recommend another home.
 
@@ -120,9 +97,9 @@ Classify every candidate before writing.
 
 ## Conditional relevance
 
-Weight each rule by when it applies, so an agent reading the file sees at a glance which rules matter for the current task. The `<important if>` form is a convention imported from Claude Code; trigger-prefixed bullets are the portable, always-safe form.
+Weight each rule by when it applies. The agent then sees which rules matter for the current task. The `<important if>` form is a convention imported from Claude Code. Trigger-prefixed bullets are portable and always safe.
 
-**Foundational stays bare.** Content relevant to virtually every task — project identity, project map, tech stack, commands — is plain markdown near the top of the file. Rule of thumb: relevant to 90%+ of tasks, leave it bare.
+**Foundational stays bare.** Content relevant to virtually every task — project identity, project map, tech stack, commands — is plain markdown near the top of the file. If content is relevant to 90 percent of tasks or more, leave it bare.
 
 **Conditional rules carry a trigger.** Two forms, split by granularity:
 
@@ -130,10 +107,10 @@ Weight each rule by when it applies, so an agent reading the file sees at a glan
 - Trigger-prefixed bullets for single rules anywhere:
 
 ```md
-- When touching `packages/db/migrations`: never edit a committed migration; add a new one.
+- When touching `packages/db/migrations`: never edit a committed migration. Add a new one.
 ```
 
-**Conditions must be narrow.** A condition that matches most work weights nothing.
+**Make each condition narrow.** A condition that matches most work adds no signal.
 
 Bad:
 
@@ -149,15 +126,17 @@ Good:
 <important if="you are touching the database schema or Prisma models">
 ```
 
-**Prefer inline over discoverable.** Conditioned guidance stays inline in a loaded file; do not move it to a separate doc the agent must find. Nested `AGENTS.md` placement is a different axis — but the loader never reaches below the session's start directory, so a nested file trades scope isolation for discovery risk (see "Root vs nested placement").
+**Keep conditioned guidance inline.** A separate doc costs the agent a search before it helps. Nested `AGENTS.md` placement is a different axis, but the loader never reads below the start directory of the session. A nested file trades scope isolation for discovery risk. See "Root vs nested placement".
 
-**Cut embedded code, keep instruction examples.** Code snippets go stale and bloat the file — point at a file instead: "see `src/server/db.ts` for the access pattern." Short do/do-not instruction pairs that prevent a known mistake stay.
+**Cut embedded code, keep instruction examples.** Code snippets go stale and bloat the file. Point at a file instead: "see `src/server/db.ts` for the access pattern." Keep short do/do-not pairs that prevent a known mistake.
 
 ## Root vs nested placement
 
 Use the narrowest scope that remains useful.
 
-Pi's loader walks upward from the session's start directory, so a nested `AGENTS.md` loads only when the session starts inside that subtree — and sessions usually start at the repo root. Choose nested placement when the subtree is a workspace sessions enter directly, or its rules are cold enough that a root pointer suffices. When sessions launch at root and the rules are hot, keep them in root under a condition instead.
+The Pi loader walks upward from the start directory of the session. A nested `AGENTS.md` loads only when a session starts inside that subtree. Sessions usually start at the repo root.
+
+Choose a nested file when sessions often start inside the subtree, or when a root pointer is enough for rare rules. If sessions start at the root and the rules matter often, keep the rules in root under a condition.
 
 ### Root `AGENTS.md`
 
@@ -168,14 +147,14 @@ Put guidance in the repo root only when it applies to most future work in the re
 - project layout map
 - global generated-file, secret, and security rules
 - global architecture constraints
-- pointers to nested `AGENTS.md` files (loaded only when a session starts inside that subtree; see "Pi runtime facts")
+- pointers to nested `AGENTS.md` files (loaded only when a session starts inside that subtree — see "Pi runtime facts")
 
 Root examples:
 
 ```md
 - Use `bun`, not `npm`, for this repository.
 - Before handoff, run `bun run check` unless the task is docs-only.
-- Do not edit files under `dist/`; they are generated.
+- Do not edit files under `dist/`. They are generated.
 - For changes under `apps/*`, also read the nearest nested `AGENTS.md` before editing.
 ```
 
@@ -199,7 +178,7 @@ Nested example:
 # packages/db/AGENTS.md
 
 - Schema changes require a migration in `packages/db/migrations`.
-- Never edit an existing committed migration; add a new one.
+- Never edit an existing committed migration. Add a new one.
 - For schema changes, run `bun test packages/db`.
 ```
 
@@ -228,7 +207,7 @@ Order any `AGENTS.md` with multiple concerns in layers: foundational bare conten
 
 ## Project map
 
-[directory listing with brief descriptions; point at nested AGENTS.md files]
+[directory listing with brief descriptions, with pointers to nested AGENTS.md files]
 
 ## Commands
 
@@ -254,8 +233,6 @@ When an `AGENTS.md` already exists, avoid append-only edits.
 4. **Merge** overlapping bullets into one sharper instruction.
 5. **Add** new guidance only after pruning/replacement — bare if foundational, with a condition otherwise.
 
-Commands are the exception: keep all of them, corrected and deduplicated, including rarely used ones.
-
 A good diff often reduces line count.
 
 ## Audit workflow
@@ -270,7 +247,7 @@ When auditing or rewriting `AGENTS.md` files:
 6. Apply the smallest coherent edit.
 7. Report what changed and why.
 
-Verify commands exist in package scripts or project files before documenting them.
+Before you document a command, make sure that it exists in package scripts or project files.
 
 ## Writing style
 
@@ -302,7 +279,7 @@ Make sure to follow best practices and keep things clean.
 Good:
 
 ```md
-- Use `src/server/db.ts` for database access; do not create new Prisma clients in route handlers.
+- Use `src/server/db.ts` for database access. Do not create new Prisma clients in route handlers.
 ```
 
 Bad:
@@ -348,7 +325,7 @@ This is our full-stack app. We love clean code!
 - Run `bun run check` before handoff.
 ```
 
-Output — root rewritten in layers; schema rules moved to a nested file:
+Output — root rewritten in layers. Schema rules moved to a nested file:
 
 ```md
 # AGENTS.md
@@ -359,7 +336,7 @@ Bun monorepo: Next.js web app, Express API, Prisma packages.
 
 - `apps/web/` — Next.js app (App Router).
 - `apps/api/` — Express REST API.
-- `packages/db/` — Prisma schema, client, migrations; see `packages/db/AGENTS.md` before schema work.
+- `packages/db/` — Prisma schema, client, migrations. See `packages/db/AGENTS.md` before schema work.
 
 ## Commands
 
@@ -368,36 +345,36 @@ Bun monorepo: Next.js web app, Express API, Prisma packages.
 | `bun run dev` | Start dev server |
 | `bun run test` | Run all tests |
 | `bun run typecheck` | Typecheck |
-| `bun run check` | Full check; run before handoff |
+| `bun run check` | Full check. Run before handoff |
 
 <important if="you are building or styling UI in apps/web">
 
 - Prefer server components unless the component needs browser state or effects.
-- Use Tailwind v4 utilities; avoid adding CSS modules. See `src/app/` for the pattern.
+- Use Tailwind v4 utilities. Do not add CSS modules. See `src/app/` for the pattern.
 - For UI changes: `bun run test apps/web` plus `bun run typecheck`.
 </important>
 
-- When accessing the database from route handlers: use `src/server/db.ts`; do not create new Prisma clients.
+- When accessing the database from route handlers: use `src/server/db.ts`. Do not create new Prisma clients.
 ```
 
 ```md
 # packages/db/AGENTS.md
 
 - Schema changes require a migration in `packages/db/migrations`.
-- Never edit a committed migration; add a new one.
+- Never edit a committed migration. Add a new one.
 ```
 
 What was removed and why:
 
 - "clean code / best practices" — generic, changes nothing
-- named exports, `const` vs `let`, strict equality — linter/formatter territory; enforce with tooling
+- named exports, `const` vs `let`, strict equality — linter/formatter territory. Enforce them with tooling
 - functional components with TS props interfaces — imitable from existing `src/app` components
 - "Today we are fixing login" — one-off task state
 
 What was moved:
 
-- migration rules → `packages/db/AGENTS.md` (per the placement algorithm: the lowest directory whose descendants all need them), with a map pointer; sessions doing schema work often start inside the package
-- web rules stayed in root, conditioned — sessions launch at root and UI work is hot, so a nested `apps/web/AGENTS.md` might never load
+- migration rules → `packages/db/AGENTS.md`, with a pointer in the project map. The placement algorithm picks the lowest directory whose descendants all need the rules. Sessions with schema work often start inside the package.
+- web rules stayed in root, under a condition. Sessions launch at the root, so a nested `apps/web/AGENTS.md` can stay unloaded.
 
 What was kept:
 
@@ -407,7 +384,7 @@ What was kept:
 
 ## Handling noncoder / vibe-coded projects
 
-The user may not know what should be made durable. You are responsible for noticing durable lessons, but you must not silently bloat instructions.
+Often the user does not know which lessons are durable. Notice durable lessons yourself. Never bloat the instructions silently.
 
 When you suspect an instruction update is needed:
 
@@ -437,14 +414,14 @@ Instruction precedence for AGENTS.md hierarchy:
 3. Parent/root `AGENTS.md`
 4. General Pi/default behavior
 
-If instructions conflict, do not patch around it with caveats. Resolve by editing the narrower or stale instruction, or report the conflict if resolution is not obvious.
+If instructions conflict, resolve the conflict. Edit the narrower or the stale instruction. If the resolution is not obvious, report the conflict.
 
-This list is session authority — which instruction wins when several are loaded. It does not override edit-target selection: fixes still go wherever the placement algorithm points.
+This list gives session authority: it tells you which instruction wins when several are loaded. It does not choose the edit target. Send each fix to the file that the placement algorithm picks.
 
 Prefer:
 
 ```md
-- Use `pnpm` in `legacy-app/`; the repo root uses `bun` elsewhere.
+- Use `pnpm` in `legacy-app/`. The repo root uses `bun` elsewhere.
 ```
 
 Over:
