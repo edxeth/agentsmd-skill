@@ -254,6 +254,7 @@ When auditing or rewriting `AGENTS.md` files:
 Before you document a command, make sure that it exists in package scripts or project files.
 
 At the end of an audit, cross-check every command and trap you executed this session against the file. A durable trap that you ran into but did not write down is a miss.
+For a full rewrite of a bloated instruction file, read the writing-for-agents skill first and apply its pruning and hierarchy rules to the rewrite.
 
 ## Writing style
 
