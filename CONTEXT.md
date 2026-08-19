@@ -1,4 +1,4 @@
-# agentsmd-architect
+# agentsmd
 
 The domain of designing and maintaining AGENTS.md instruction hierarchies for
 Pi coding agents: deciding what guidance becomes durable instruction, where it

@@ -1,5 +1,5 @@
 ---
-name: agentsmd-architect
+name: agentsmd
 description: >-
   Maintain AGENTS.md files, root or nested, so future sessions keep what this
   session learned. Use proactively. The user will not ask. Trigger moments:
@@ -11,7 +11,7 @@ description: >-
   this session learn something the next session would relearn?
 ---
 
-# agentsmd-architect
+# agentsmd
 
 Design and maintain `AGENTS.md` instruction hierarchies for Pi coding agents.
 
@@ -252,6 +252,8 @@ When auditing or rewriting `AGENTS.md` files:
 7. Report what changed and why.
 
 Before you document a command, make sure that it exists in package scripts or project files.
+
+At the end of an audit, cross-check every command and trap you executed this session against the file. A durable trap that you ran into but did not write down is a miss.
 
 ## Writing style
 
