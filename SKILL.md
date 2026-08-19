@@ -225,6 +225,8 @@ Order any `AGENTS.md` with multiple concerns in layers: foundational bare conten
 
 Use only layers that have real content. Do not create empty boilerplate.
 
+The loader states the file path at injection time, so the file body never restates its own location. Two exceptions: the heading of a nested file may carry its own path (`# packages/db/AGENTS.md`) to help humans tell equal-named files apart. The project map carries relative paths to nested files, as pointers for setups without on-read injection.
+
 ## Update strategy
 
 When an `AGENTS.md` already exists, avoid append-only edits.
