@@ -8,9 +8,7 @@ description: >-
   migration with special rules. A subtree follows different rules than the
   root. You created a new app or package. An existing AGENTS.md line is stale
   or contradicted by code. Before you finish any coding task, check once: did
-  this session learn something the next session would relearn? Also use when
-  the user mentions AGENTS.md or CLAUDE.md, or asks to make agents remember
-  something.
+  this session learn something the next session would relearn?
 ---
 
 # agentsmd-architect
