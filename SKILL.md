@@ -1,14 +1,15 @@
 ---
 name: agentsmd
 description: >-
-  Maintain AGENTS.md files, root or nested, so future sessions keep what this
-  session learned. Use proactively. The user will not ask. Trigger moments:
-  you hunted for the right test, build, or dev command. You picked the wrong
-  directory, import, or pattern twice. You met a generated file, secret, or
-  migration with special rules. A subtree follows different rules than the
-  root. You created a new app or package. An existing AGENTS.md line is stale
-  or contradicted by code. Before you finish any coding task, check once: did
-  this session learn something the next session would relearn?
+  AGENTS.md files: create, update, and prune them so future sessions keep
+  what this session learned. Use proactively. The user will not ask. Before
+  you finish any coding task, check once: did this session learn something
+  the next session would relearn? If yes, invoke this skill now. Trigger
+  moments: you hunted for the right test, build, or dev command. You picked
+  the wrong directory, import, or pattern twice. You met a generated file,
+  secret, or migration with special rules. A subtree follows different rules
+  than the root. You created a new app or package. An existing AGENTS.md line
+  is stale or contradicted by code.
 ---
 
 # agentsmd
