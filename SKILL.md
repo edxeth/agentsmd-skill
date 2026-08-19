@@ -1,12 +1,16 @@
 ---
 name: agentsmd-architect
 description: >-
-  Write and maintain AGENTS.md files for Pi coding agents: create, update,
-  audit, split, or prune them. Use when the user mentions AGENTS.md or
-  CLAUDE.md, asks to make future agents remember something, reports repeated
-  agent mistakes, or when repo structure, package commands, generated files,
-  or architecture boundaries suggest that future sessions need durable
-  guidance.
+  Maintain AGENTS.md files, root or nested, so future sessions keep what this
+  session learned. Use proactively. The user will not ask. Trigger moments:
+  you hunted for the right test, build, or dev command. You picked the wrong
+  directory, import, or pattern twice. You met a generated file, secret, or
+  migration with special rules. A subtree follows different rules than the
+  root. You created a new app or package. An existing AGENTS.md line is stale
+  or contradicted by code. Before you finish any coding task, check once: did
+  this session learn something the next session would relearn? Also use when
+  the user mentions AGENTS.md or CLAUDE.md, or asks to make agents remember
+  something.
 ---
 
 # agentsmd-architect
@@ -126,7 +130,7 @@ Good:
 <important if="you are touching the database schema or Prisma models">
 ```
 
-**Keep conditioned guidance inline.** A separate doc costs the agent a search before it helps. Nested `AGENTS.md` placement is a different axis, but the loader never reads below the start directory of the session. A nested file trades scope isolation for discovery risk. See "Root vs nested placement".
+**Keep conditioned guidance inline.** A separate doc costs the agent a search before it helps. Nested `AGENTS.md` placement is a different axis. See "Root vs nested placement".
 
 **Cut embedded code, keep instruction examples.** Code snippets go stale and bloat the file. Point at a file instead: "see `src/server/db.ts` for the access pattern." Keep short do/do-not pairs that prevent a known mistake.
 
@@ -134,9 +138,9 @@ Good:
 
 Use the narrowest scope that remains useful.
 
-The Pi loader walks upward from the start directory of the session. A nested `AGENTS.md` loads only when a session starts inside that subtree. Sessions usually start at the repo root.
+Vanilla Pi loads context files upward from the start directory of the session. A nested `AGENTS.md` never loads at startup in a session that starts at the root. This setup adds on-read injection: when the agent reads a file below the root, the nested `AGENTS.md` files above that file arrive inside the read result. See "Pi runtime facts".
 
-Choose a nested file when sessions often start inside the subtree, or when a root pointer is enough for rare rules. If sessions start at the root and the rules matter often, keep the rules in root under a condition.
+Choose a nested file when the rules are tied to a subtree that the agent works in through reads. Choose root under a condition when the rules must apply before any read in that subtree. Do the same when on-read injection is off.
 
 ### Root `AGENTS.md`
 
@@ -147,7 +151,7 @@ Put guidance in the repo root only when it applies to most future work in the re
 - project layout map
 - global generated-file, secret, and security rules
 - global architecture constraints
-- pointers to nested `AGENTS.md` files (loaded only when a session starts inside that subtree — see "Pi runtime facts")
+- pointers to nested `AGENTS.md` files (a fallback for setups without on-read injection — see "Pi runtime facts")
 
 Root examples:
 
@@ -373,8 +377,8 @@ What was removed and why:
 
 What was moved:
 
-- migration rules → `packages/db/AGENTS.md`, with a pointer in the project map. The placement algorithm picks the lowest directory whose descendants all need the rules. Sessions with schema work often start inside the package.
-- web rules stayed in root, under a condition. Sessions launch at the root, so a nested `apps/web/AGENTS.md` can stay unloaded.
+- migration rules → `packages/db/AGENTS.md`. Schema work always reads files under `packages/db`, so on-read injection delivers the file. The placement algorithm picks the lowest directory whose descendants all need the rules.
+- web rules stayed in root, under a condition. UI work does not always read `apps/web` files first, so the root keeps the rules visible from the first turn.
 
 What was kept:
 
@@ -498,9 +502,10 @@ I did not update AGENTS.md because the discovered fact is task-specific and not 
 These verified facts drive every rule above:
 
 - Pi loads context files at startup, from `~/.pi/agent/AGENTS.md` (global), the session's start directory, and parent directories walking up from it. All matching files are concatenated into the system prompt inside `<project_instructions path="...">` tags.
-- Context files are re-read when the user runs `/reload`. Nothing loads automatically on file access or directory change mid-session.
-- The loader walks upward only: a nested `AGENTS.md` below the start directory is never auto-loaded. It matters only when a session starts inside that subtree, or a root pointer tells the agent to read it.
+- Context files are re-read when the user runs `/reload`. The startup set itself does not change during a session.
+- Nested `AGENTS.md` files below the session root are never loaded at startup by Pi itself.
+- This setup injects them on read. When the agent reads a file below the root, each `AGENTS.md` between that file and the root is prepended to the read result. The order is closest first. Each file injects once per session and becomes eligible again after compaction. The exact filename `AGENTS.md` matches only. Injection truncates a file larger than 32 KB, so keep nested files small. To test injection, read a file under a nested `AGENTS.md` and look for instructions above the content.
 - Pi adds no "may or may not be relevant" caveat to injected context. `<important if>` conditioning is a convention imported from Claude Code, not a measured Pi behavior.
-- Per directory, Pi loads the first match of: `AGENTS.override.md`, `AGENTS.md`, `AGENTS.MD`, `CLAUDE.md`, `CLAUDE.MD`. Other directories still layer normally.
+- Per directory, Pi loads the first match of: `AGENTS.override.md`, `AGENTS.md`, `AGENTS.MD`, `CLAUDE.md`, `CLAUDE.MD`. Other directories still layer normally. This chain governs startup loading. On-read injection matches the exact filename `AGENTS.md` only.
 - In a linked git worktree, the worktree's context file shadows the main checkout's file for that directory.
-- Context file discovery can be disabled with `--no-context-files` (`-nc`).
+- Context file discovery can be disabled with `--no-context-files` (`-nc`). The flag disables startup loading and on-read injection.
