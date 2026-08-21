@@ -4,7 +4,7 @@ A public `skills` package repo for the `agentsmd` skill.
 
 `agentsmd` maintains AGENTS.md instruction files for AI coding agents. It answers three questions for every candidate rule:
 
-- **Does it belong in a file at all?** A 10-point Write Gate filters out generic advice, linter territory, patterns the agent can imitate from code, one-off task notes, and rules without evidence.
+- **Does it belong in a file at all?** A six-point Write Gate filters out generic advice, linter territory, patterns the agent can imitate from code, one-off task notes, and rules without evidence.
 - **Where does it live?** Root AGENTS.md, nested AGENTS.md, docs, a skill, an executable check — or nowhere.
 - **When does it apply?** Foundational rules stay bare. Task-specific rules carry a narrow condition: `<important if>` blocks or trigger-prefixed bullets.
 
@@ -30,7 +30,7 @@ Pairs with Matt Pocock's writing-for-agents — see [Recommended companions](#re
 
 ## What's inside
 
-- **Write Gate** — 10 criteria each instruction must pass before it is written
+- **Write Gate** — six criteria each instruction must pass before it is written
 - **Placement table and algorithm** — where guidance belongs, with the lowest-common-directory rule
 - **Layered template** — identity and map bare, commands in a table, conditioned sections after
 - **Update strategy** — delete, replace, move, and merge before you add
