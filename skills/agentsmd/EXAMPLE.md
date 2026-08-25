@@ -41,7 +41,7 @@ Bun monorepo: Next.js web app, Express API, Prisma packages.
 
 - `apps/web/` — Next.js app (App Router).
 - `apps/api/` — Express REST API.
-- `packages/db/` — Prisma schema, client, migrations. See `packages/db/AGENTS.md` before schema work.
+- `packages/db/` — Prisma schema, client, migrations.
 
 ## Commands
 
