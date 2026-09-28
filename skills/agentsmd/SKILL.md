@@ -1,14 +1,13 @@
 ---
 name: agentsmd
 description: >-
-  AGENTS.md files, root or nested in any subdirectory: create, update, and
-  prune them so future sessions keep what this session learned. Use proactively; the user will not ask. Before
-  finishing any coding task, check once for a durable lesson — a command you
-  had to hunt for, a wrong directory or pattern you picked twice, a generated
-  file, secret, or migration with special rules, or a trap you worked around
-  — and invoke this skill to place it. Also invoke when you created a new app
-  or package, a subtree you worked in needs different rules than the root
-  file, or an AGENTS.md line is stale or contradicted by code.
+  Required final step of every coding task, including a one-line fix: before
+  your final answer, read this SKILL.md and check once for a durable lesson
+  to record in AGENTS.md, such as a command that AGENTS.md misstates, a new
+  app or package, or a generated file, secret, migration, or trap with
+  special rules. Use it proactively. The user will not ask. Also read it before you
+  create, update, or prune any AGENTS.md or CLAUDE.md, root or nested. This
+  description is not enough to edit them correctly.
 ---
 
 # agentsmd
@@ -24,6 +23,17 @@ Treat `AGENTS.md` as a versioned operating contract for future agents: exact com
 
 Per directory, Pi treats `CLAUDE.md` as a fallback when no `AGENTS.md` exists. Apply the same discipline to whichever name a repo uses.
 
+## Wrap-up check
+
+When you read this skill at the end of a coding task:
+
+1. List the lesson candidates from this session. Compare each command line in the loaded AGENTS.md files, word for word, with the command that worked this session. A line that differs is a candidate. Also list a new app or package, a generated file, secret, or migration with special rules, a trap you worked around, a wrong turn you took twice.
+2. Run each candidate, and each AGENTS.md edit you already made this session, through the Write Gate and Placement below.
+3. For each candidate that passes, make the smallest edit that "Audit and update" describes.
+4. End your final answer with one line: `AGENTS.md: <file>: <change and reason>`, or `AGENTS.md: no change (<reason>)`.
+
+The check is complete when every candidate is recorded or rejected with a reason.
+
 ## Write Gate
 
 Default to no edit. A candidate line passes only when it is:
@@ -35,8 +45,7 @@ Default to no edit. A candidate line passes only when it is:
 5. **Single-sourced** — stated once, in the right file, contradicting neither parent nor nested instructions.
 6. **Evidence-backed** — inferred from repo files, commands, or errors observed this session, not assumption.
 
-Commands are the one exception: an agent cannot guess a command it has never seen. Keep every command. Correct it, deduplicate it, or scope it — never delete it for brevity.
-When a command carries a selection, timing, wrapper, or danger fact, its What-it-does cell states that fact (`Full check. Run before handoff`), not a restatement of the name (`Runs the check suite`); a routine command keeps its row with a plain cell. Never record a secret-bearing command (token, connection string, production endpoint) or a one-off destructive invocation — record the safe wrapper, or the fact without the secret. Keep package-only commands in that package's nested file so root stays bounded.
+Commands pass the same gate. A manifest is any file at a repo or package root that names runnable commands, in any ecosystem: `package.json` or `deno.json` scripts, `Makefile`, `justfile`, or `Taskfile.yml` targets, `pyproject.toml`, `Cargo.toml`, `composer.json`, `mix.exs`, `build.gradle`. A command that a manifest already names fails criterion 2: agents read those files before they run anything. So does the default command of a toolchain (`cargo test`, `go test ./...`). Add a command only for a fact the manifest does not show: which one to run before handoff, a required wrapper, environment variable, or service, a slow or dangerous run, or a command with no manifest entry. Its What-it-does cell states that fact (`Full check. Run before handoff`), not a restatement of the name (`Runs the check suite`). Keep existing command lines: correct a stale one to the working command, deduplicate it, or scope it, but do not delete it for brevity. Never record a secret-bearing command (token, connection string, production endpoint) or a one-off destructive invocation — record the safe wrapper, or the fact without the secret. Keep package-only commands in that package's nested file so root stays bounded.
 
 Every line costs tokens on every request and is maintenance surface forever. The one controlled study found no adherence difference — prune for cost and maintenance, not for obedience. Prefer replacing, moving, or deleting stale guidance over appending; a good diff often reduces line count.
 
@@ -46,7 +55,7 @@ Resolve the *where* axis before the *when* axis:
 
 | Candidate guidance | Home |
 | --- | --- |
-| Always-relevant repo facts and commands | root `AGENTS.md` |
+| Always-relevant repo facts, and commands with a fact their manifest does not show | root `AGENTS.md` |
 | Rules true only below a directory | nested `AGENTS.md` at the lowest directory whose descendants all need it |
 | Long architecture explanation | docs, with a short pointer in `AGENTS.md` if needed |
 | Reusable multi-step agent workflow | skill |
@@ -65,7 +74,7 @@ If a rule applies to only one file or one current task, do not create an `AGENTS
 
 Inside the chosen file:
 
-- Foundational content (project identity, project map, commands) sits bare near the top — relevant to ~90 percent of tasks or more.
+- Foundational content (project identity, project map, commands that pass the Write Gate) sits bare near the top — relevant to ~90 percent of tasks or more.
 - A single Conditional rule is a trigger-prefixed bullet: `- When touching packages/db/migrations: never edit a committed migration. Add a new one.`
 - A group of rules for one kind of work may use an `<important if="narrow trigger">` block. This form is unvalidated; trigger-prefixed bullets are the portable default. `$PI_SKILL_DIR/docs/adr/0001-conditional-relevance-blocks.md` records the status and the fallback plan.
 
@@ -107,7 +116,7 @@ Use only layers with real content.
 
 Bloat review triggers for ordinary repo files: a healthy root file sits near 20 content lines, a nested file between 1 and 10. Treat over 40 root lines as a prune signal and over 100 as documentation that belongs in docs. Exceed a budget only with evidence. A new bullet per new mistake, instead of fixing the underlying command or check, is a prune signal.
 
-Completion criterion: cross-check every command and trap you executed this session against the file. A durable trap you ran into but did not write down is a miss.
+Completion criterion: cross-check every trap and every misstated command from this session against the file. A durable trap you ran into but did not write down is a miss.
 
 Report per-file changes with reasons, plus anything you deliberately did not add. When you decide not to edit, say why.
 

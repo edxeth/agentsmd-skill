@@ -8,7 +8,7 @@ A public `skills` package repo for the `agentsmd` skill.
 - **Where does it live?** Root AGENTS.md, nested AGENTS.md, docs, a skill, an executable check — or nowhere.
 - **When does it apply?** Foundational rules stay bare. Task-specific rules carry a narrow condition: `<important if>` blocks or trigger-prefixed bullets.
 
-The default action is "no edit". Commands are the one exception: an agent cannot guess a command it has never seen.
+The default action is "no edit". A command gets a line only when it carries a fact that its manifest does not show. A manifest is any root file that names runnable commands, in any ecosystem: `package.json`, `Makefile`, `justfile`, `pyproject.toml`, `Cargo.toml`, and similar.
 
 Built and verified for the Pi coding agent. The runtime-facts section documents both context-file regimes: the startup upward walk and on-read injection of nested files. The general doctrine transfers to any harness that loads AGENTS.md or CLAUDE.md.
 
@@ -22,9 +22,9 @@ npx skills add edxeth/agentsmd-skill
 
 ### agentsmd
 
-Create, update, audit, split, and prune AGENTS.md files, root or nested. The skill fires proactively at task wrap-up ("did this session learn something the next session would relearn?") and on trigger moments: command hunts, repeated wrong turns, generated files with special rules, new packages, stale instruction lines.
+Create, update, audit, split, and prune AGENTS.md files, root or nested. The description makes the skill a required final step of every coding task: the agent reads the body before its final answer, runs the wrap-up check, and ends with one `AGENTS.md:` line that states the change or why there is none. The agent also reads it before any AGENTS.md or CLAUDE.md edit.
 
-Field-tested in live sessions on production codebases (vuejs/core, Effect-TS): manual invocation produced near-textbook output with evidence-based refusals. Autonomous firing from the description alone was verified on strong model tiers; on mid-tier models, invoke it by hand.
+Field-tested in live sessions on production codebases (vuejs/core, Effect-TS): manual invocation produced near-textbook output with evidence-based refusals. A live Pi benchmark with low-cost models like GLM-5.3-Flash and GPT-6-Luna (10 runs per scenario) measured autonomous firing on four coding tasks and a read-only question. The final AGENTS.md was correct in 100 of 100 runs. The agent read the skill in 78 of 80 coding runs and in 0 of 20 question runs.
 
 Pairs with Matt Pocock's writing-for-agents — see [Recommended companions](#recommended-companions).
 

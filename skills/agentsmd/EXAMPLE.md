@@ -47,9 +47,6 @@ Bun monorepo: Next.js web app, Express API, Prisma packages.
 
 | Command | What it does |
 | --- | --- |
-| `bun run dev` | Start dev server |
-| `bun run test` | Run all tests |
-| `bun run typecheck` | Typecheck |
 | `bun run check` | Full check. Run before handoff |
 
 <important if="you are building or styling UI in apps/web">
@@ -83,6 +80,7 @@ Bun monorepo: Next.js web app, Express API, Prisma packages.
 
 ## What was kept
 
-- All four commands from `package.json`, bare in the Commands section (commands survive pruning).
+- `bun run check`, with its handoff fact in the What-it-does cell. The UI test and typecheck commands stay in the UI block, where their selection fact applies.
+- `bun run dev` and plain `bun run test` are not added: `package.json` already names them and the file adds no fact about them.
 - The Prisma-client rule — a single root-relevant rule, so a trigger-prefixed bullet.
 - Project map — Foundational, stays bare.

@@ -29,6 +29,12 @@ Likely to remain true beyond the current task or session.
 _Avoid_: permanent, timeless
 
 **Command**:
-An exact runnable invocation (test, build, lint, dev). The one content type an
-agent cannot infer or imitate.
+An exact runnable invocation (test, build, lint, dev). Recorded only with a
+fact that its Manifest does not show.
 _Avoid_: task, script example
+
+**Manifest**:
+Any file at a repo or package root that names runnable commands, in any
+ecosystem: `package.json` scripts, `Makefile` or `justfile` targets,
+`pyproject.toml`, `Cargo.toml`, and similar.
+_Avoid_: config
