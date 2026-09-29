@@ -22,7 +22,7 @@ npx skills add edxeth/agentsmd-skill
 
 ### agentsmd
 
-Create, update, audit, split, and prune AGENTS.md files, root or nested. The description makes the skill a required final step of every coding task: the agent reads the body before its final answer, runs the wrap-up check, and ends with one `AGENTS.md:` line that states the change or why there is none. The agent also reads it before any AGENTS.md or CLAUDE.md edit.
+Create, update, audit, split, and prune AGENTS.md files, root or nested. The description makes the skill a required final step of every coding task: the agent reads the body before its final answer and runs the wrap-up check. It edits only context files inside the git repository of the session. Its final answer mentions context files only when a file changed or a lesson needs the user's decision. The agent also reads it before any AGENTS.md or CLAUDE.md edit.
 
 Field-tested in live sessions on production codebases (vuejs/core, Effect-TS): manual invocation produced near-textbook output with evidence-based refusals. A live Pi benchmark with low-cost models like GLM-5.3-Flash and GPT-6-Luna (10 runs per scenario) measured autonomous firing on four coding tasks and a read-only question. The final AGENTS.md was correct in 100 of 100 runs. The agent read the skill in 78 of 80 coding runs and in 0 of 20 question runs.
 
@@ -31,12 +31,13 @@ Pairs with Matt Pocock's writing-for-agents — see [Recommended companions](#re
 ## What's inside
 
 - **Write Gate** — six criteria each instruction must pass before it is written
+- **Project scope** — edits stay inside the session's git repository; other context files change only when the user names them
 - **Placement table and algorithm** — where guidance belongs, with the lowest-common-directory rule
 - **Layered template** — identity and map bare, commands in a table, conditioned sections after
 - **Update strategy** — delete, replace, move, and merge before you add
 - **Pi runtime facts** — verified loader behavior: startup concatenation, `/reload`, the precedence chain, on-read nested injection, worktree shadowing
 - **Worked example** — a messy AGENTS.md rewritten end to end, with removed, moved, and kept accounting
-- **CONTEXT.md** — the skill's own glossary: Placement, Condition, Foundational, Conditional, Durable, Command
+- **CONTEXT.md** — the skill's own glossary: Placement, Condition, Foundational, Conditional, Durable, Command, Manifest
 - **ADR 0001** — conditional-relevance blocks recorded as a hypothesis, with a falsification path
 
 ## Recommended companions
