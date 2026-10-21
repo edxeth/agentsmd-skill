@@ -84,3 +84,39 @@ Bun monorepo: Next.js web app, Express API, Prisma packages.
 - `bun run dev` and plain `bun run test` are not added: `package.json` already names them and the file adds no fact about them.
 - The Prisma-client rule — a single root-relevant rule, so a trigger-prefixed bullet.
 - Project map — Foundational, stays bare.
+
+## Second example: pruning an accreted nested file
+
+Everything the example claims is evidenced in the hypothetical fixture repo: `Makefile` defines `run`, `test`, and `verify`, and `make -n verify` lists no `archive` target; `make run` prints the port it listens on; `src/` holds twelve modules, each with a same-named directory under `test/` except `src/queue`, which the `jobs` runtime target proves; `src/handlers/` does not exist; the two CSS copies already differed, and `test/renderer-css` was added in the same change; the timings appear in the commit bodies that measured them.
+
+### Input — `services/worker/AGENTS.md` after many sessions
+
+```md
+# services/worker
+
+- Module map: `src/queue` consumes jobs (test: `jobs` target); `src/billing` totals (test `test/billing`); `src/render` ... (nine more lines)
+- Full suite 22 s, focused run 1.1 s (2026-03-02); re-measure before relying on these.
+- The shell CSS lives in two synchronized places, `app.css` and the inline block in `src/render`. Change both together.
+- New handlers go in `src/handlers/<feature>/` once that migration lands.
+- Click Run in the IDE, or ask the maintainer to start the worker.
+- `make verify` runs the full matrix including the `archive` target.
+```
+
+### Output
+
+```md
+# services/worker
+
+- Each `src/<module>` has `test/<module>`; `src/queue` is proven by the `jobs` runtime target instead.
+- The shell CSS lives twice (`app.css`, the inline block in `src/render`); `test/renderer-css` fails when they differ.
+- Start the worker with `make run`; it prints the port it listens on.
+```
+
+### What was removed, and why
+
+- The module map — one listing gives it (Repo-specific). The convention and its one exception carry the same information in one line.
+- The timings — they drift with hardware and time (Durable); they live in the commit bodies that measured them.
+- "two synchronized places" — unverifiable, and the copies had already diverged (Checkable). The invariant became `test/renderer-css`, and the line now names that check (Right-homed).
+- `src/handlers/<feature>/` — a plan; the directory does not exist (Durable).
+- The IDE button and the maintainer — a person's steps; the agent runs the command (Writing style).
+- `make verify ... archive` — false; `make -n verify` no longer runs that target. Deleted rather than corrected because the Makefile already shows what `verify` runs (Repo-specific), not for brevity. Found by the wrap-up's falsification step, not by a reader noticing.

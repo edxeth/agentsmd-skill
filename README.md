@@ -30,14 +30,16 @@ Pairs with Matt Pocock's writing-for-agents — see [Recommended companions](#re
 
 ## What's inside
 
-- **Write Gate** — six criteria each instruction must pass before it is written
+- **Write Gate** — six criteria each instruction must pass before it is written; measurements, plans, listings, paraphrases of docs, and claims nothing can check fail it
+- **Falsify before you add** — the wrap-up re-checks every line about a path or command the session touched, so files shrink as well as grow
+- **Reference check** — `scripts/check-refs.sh`, a candidate scan that lists backticked paths in a context file that do not exist; patterns, commands, and runtime files are dismissed by eye
 - **Project scope** — edits stay inside the session's git repository; other context files change only when the user names them
-- **Placement table and algorithm** — where guidance belongs, with the lowest-common-directory rule
+- **Placement table and algorithm** — where guidance belongs, starting from the trigger file, with the lowest-common-directory rule
 - **Layered template** — identity and map bare, commands in a table, conditioned sections after
 - **Update strategy** — delete, replace, move, and merge before you add
 - **Pi runtime facts** — verified loader behavior: startup concatenation, `/reload`, the precedence chain, on-read nested injection, worktree shadowing
-- **Worked example** — a messy AGENTS.md rewritten end to end, with removed, moved, and kept accounting
-- **CONTEXT.md** — the skill's own glossary: Placement, Condition, Foundational, Conditional, Durable, Command, Manifest
+- **Worked examples** — a messy root AGENTS.md rewritten end to end, and an accreted nested file pruned, with removed, moved, and kept accounting
+- **GLOSSARY.md** — the skill's own glossary: Placement, Condition, Foundational, Conditional, Durable, Command, Manifest, Trigger file, Checkable
 - **ADR 0001** — conditional-relevance blocks recorded as a hypothesis, with a falsification path
 
 ## Recommended companions

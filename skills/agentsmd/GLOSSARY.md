@@ -38,3 +38,14 @@ Any file at a repo or package root that names runnable commands, in any
 ecosystem: `package.json` scripts, `Makefile` or `justfile` targets,
 `pyproject.toml`, `Cargo.toml`, and similar.
 _Avoid_: config
+
+**Trigger file**:
+The file an agent edits or runs when a rule applies. Placement starts from it:
+the rule lives in the lowest context file that is in context before that edit.
+_Avoid_: source, origin
+
+**Checkable**:
+Names the path, command, test, or identifier a future agent can verify. A line
+that is not Checkable is not written; an invariant gets a check and the line
+names it.
+_Avoid_: verifiable, concrete
