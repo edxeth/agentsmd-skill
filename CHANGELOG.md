@@ -4,6 +4,12 @@ Notable changes to the `agentsmd` skill. Pending entries sit under `## [Unreleas
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-10-21
+
+### New Features
+
+- **Falsify before you add**: context files now shrink as well as grow. The wrap-up re-checks every line about something the session touched, and a bundled reference scan flags paths that no longer exist. See [Wrap-up check](skills/agentsmd/SKILL.md#wrap-up-check).
+
 ### Added
 
 - Added `skills/agentsmd/scripts/check-refs.sh`, a candidate scan the wrap-up runs on every edited context file. It lists each backticked span with a slash or an extension that exists neither from the repository root nor from the file's directory; commands pass when their first word exists, and placeholders, globs, URLs, and variables are skipped. Exit 0 means a clean scan, 1 hits, 2 usage error or unreadable input. See [Reference check](skills/agentsmd/SKILL.md#reference-check).
